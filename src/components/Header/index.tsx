@@ -2,7 +2,13 @@ export const Header = () => (
   <header class="site-header">
     <div class="header-inner">
       <h1 class="site-title">
-        🏆 MUNDIAL <span>2026</span>
+        <img
+          src="https://crests.football-data.org/wm26.png"
+          alt="Mundial 2026"
+          class="site-logo"
+          width={50}
+        />
+        MUNDIAL <span>2026</span>
       </h1>
       <div class="live-badge">
         <span class="live-dot" />
@@ -10,8 +16,7 @@ export const Header = () => (
       </div>
     </div>
     <nav class="tab-nav">
-      {/* <a href="/">En Vivo</a>
-      <a href="/itinerario">Itinerario</a> */}
+      <span class="site-title-animation">FIFA world cup</span>
     </nav>
   </header>
 );

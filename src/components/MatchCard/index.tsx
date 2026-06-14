@@ -9,6 +9,33 @@ interface Props {
 const LIVE_STATUSES = new Set(["IN_PLAY", "PAUSED"]);
 
 export const MatchCard: FC<Props> = ({ match }) => {
+  console.log("match", match);
+  if (match === undefined) {
+    return (
+      <div class={"no-matches"}>
+        <div class={"texto"}>No hay partidos en vivo en este momento.</div>
+        <div>
+          Puedes visitar las siguentes paginas para ver el resumen de los
+          partidos y el itinerario:
+          <div class="sponsors">
+            <a href="https://onefootball.com/es/inicio" target="_blank">
+              <img
+                src="https://filebucket.onefootball.com/2026/5/1777890758102-onefootball.png"
+                alt="onefootball.com"
+                width={150}
+              />
+            </a>
+            <a href="https://www.tycsports.com/" target="_blank">
+              <img
+                src="https://statics-files.tycsports.com/frontend/tycsports/img/logos_2026/logo-azul.svg"
+                alt=" tycsports.com"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const isLive = LIVE_STATUSES.has(match.status);
   const isFinished = match.status === "FINISHED";
   const score = match.score.fullTime;

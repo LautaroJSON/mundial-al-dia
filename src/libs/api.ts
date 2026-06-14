@@ -65,6 +65,7 @@ async function fetchApi<T>(token: string, path: string): Promise<T> {
     headers: { "X-Auth-Token": token },
   });
   if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`);
+  console.log(res);
   return res.json() as Promise<T>;
 }
 
@@ -95,10 +96,13 @@ async function cached<T>(
 
 export function getLiveMatches(env: Env): Promise<Match[]> {
   const competition = env.COMPETITION_CODE ?? "WC";
-  return fetchApi<ApiResponse>(
+  const response = fetchApi<ApiResponse>(
     env.API_TOKEN,
     `/competitions/${competition}/matches?status=IN_PLAY,PAUSED`,
   ).then((d) => d.matches ?? []);
+
+  console.log("response", response);
+  return response;
   // return cached(env.CACHE, "live-matches", TTL.live, () =>
   //   fetchApi<ApiResponse>(
   //     env.API_TOKEN,
