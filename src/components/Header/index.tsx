@@ -10,8 +10,8 @@ export const Header = () => (
       </div>
     </div>
     <nav class="tab-nav">
-      <a href="/">En Vivo</a>
-      <a href="/itinerario">Itinerario</a>
+      {/* <a href="/">En Vivo</a>
+      <a href="/itinerario">Itinerario</a> */}
     </nav>
   </header>
 );
