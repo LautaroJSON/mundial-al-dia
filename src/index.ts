@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import homePage from "./routes/home";
+import { itineraryPage } from "./routes/intineraryPage";
 
 const app = new Hono();
 
 app.get("/", homePage);
+app.get("/intinerario", itineraryPage);
 
 app.onError((err, c) => {
   console.error("Error:", err.message);

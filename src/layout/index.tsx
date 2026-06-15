@@ -1,5 +1,6 @@
 import type { FC } from "hono/jsx";
 import { Header } from "../components/Header";
+import { raw } from "hono/html";
 
 interface Props {
   title?: string;
@@ -46,5 +47,45 @@ export const Layout: FC<Props> = ({ title = "Mundial 2026", children }) => (
         &nbsp;·&nbsp; Horarios en Argentina (ART, UTC-3)
       </footer>
     </body>
+    {raw(`
+      <script>
+        (function () {
+          const paisSelect  = document.getElementById('pais-select');
+          const stageSelect = document.getElementById('stage-select');
+          const dayGroups   = document.querySelectorAll('.day-group');
+
+          function applyFilters() {
+            const pais  = paisSelect.value;
+            const stage = stageSelect.value;
+
+            dayGroups.forEach((group) => {
+              const cards = group.querySelectorAll('.match-card');
+              let visibleInGroup = 0;
+
+              cards.forEach((card) => {
+                const matchesPais =
+                  pais === 'all' ||
+                  card.dataset.home === pais ||
+                  card.dataset.away === pais;
+
+                const matchesStage =
+                  stage === 'all' ||
+                  card.dataset.stage === stage;
+
+                const visible = matchesPais && matchesStage;
+                card.style.display = visible ? '' : 'none';
+                if (visible) visibleInGroup++;
+              });
+
+              // Si ninguna card del día es visible, ocultamos también el day-header
+              group.style.display = visibleInGroup > 0 ? '' : 'none';
+            });
+          }
+
+          paisSelect.addEventListener('change', applyFilters);
+          stageSelect.addEventListener('change', applyFilters);
+        })();
+      </script>
+      `)}
   </html>
 );

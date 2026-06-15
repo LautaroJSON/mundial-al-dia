@@ -1,6 +1,8 @@
 import type { FC } from "hono/jsx";
 import type { Match } from "../../libs/api";
-import { formatTime, stageLabel } from "../../libs/api";
+import { formatTime, getMatchMinute, stageLabel } from "../../libs/api";
+import { translateTeam } from "../../libs/translations";
+import { NoMatches } from "./noMatches";
 
 interface Props {
   match: Match;
@@ -10,32 +12,7 @@ const LIVE_STATUSES = new Set(["IN_PLAY", "PAUSED"]);
 
 export const MatchCard: FC<Props> = ({ match }) => {
   console.log("match", match);
-  if (match === undefined) {
-    return (
-      <div class={"no-matches"}>
-        <div class={"texto"}>No hay partidos en vivo en este momento.</div>
-        <div>
-          Puedes visitar las siguentes paginas para ver el resumen de los
-          partidos y el itinerario:
-          <div class="sponsors">
-            <a href="https://onefootball.com/es/inicio" target="_blank">
-              <img
-                src="https://filebucket.onefootball.com/2026/5/1777890758102-onefootball.png"
-                alt="onefootball.com"
-                width={150}
-              />
-            </a>
-            <a href="https://www.tycsports.com/" target="_blank">
-              <img
-                src="https://statics-files.tycsports.com/frontend/tycsports/img/logos_2026/logo-azul.svg"
-                alt=" tycsports.com"
-              />
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
   const isLive = LIVE_STATUSES.has(match.status);
   const isFinished = match.status === "FINISHED";
   const score = match.score.fullTime;
@@ -54,17 +31,31 @@ export const MatchCard: FC<Props> = ({ match }) => {
 
   return (
     <>
-      <article class={`match-card${isLive ? " is-live" : ""}`}>
+      <article
+        class={`match-card${isLive ? " is-live" : ""}`}
+        data-home={match.homeTeam.name}
+        data-away={match.awayTeam.name}
+        data-stage={match.stage}
+      >
         {/* Meta row: stage + time */}
         <div class="match-meta">
           <span class="stage-pill">{stageLabel(match.stage, match.group)}</span>
+          {isLive && (
+            <span
+              class={`match-minute${match.status === "PAUSED" ? " is-paused" : ""}`}
+            >
+              {match.status === "PAUSED"
+                ? "ET"
+                : getMatchMinute(match.utcDate, match.lastUpdated)}
+            </span>
+          )}
           <span class={`match-time${isLive ? " live" : ""}`}>
             {isLive
               ? match.status === "PAUSED"
                 ? "⏸ Medio tiempo"
                 : "🔴 En juego"
               : isFinished
-                ? "✓ Final"
+                ? "✓ Finalizado"
                 : `⏰ ${formatTime(match.utcDate)}`}
           </span>
         </div>
@@ -81,7 +72,8 @@ export const MatchCard: FC<Props> = ({ match }) => {
                 height="36"
               />
             )}
-            <span class="team-name">{match.homeTeam.shortName}</span>
+            <span class="team-name">{translateTeam(match.homeTeam.name)}</span>
+            <span class="team-name-original">{match.homeTeam.name}</span>
           </div>
 
           <div class="score-box">
@@ -105,7 +97,8 @@ export const MatchCard: FC<Props> = ({ match }) => {
                 height="36"
               />
             )}
-            <span class="team-name">{match.awayTeam.shortName}</span>
+            <span class="team-name">{translateTeam(match.awayTeam.name)}</span>
+            <span class="team-name-original">{match.awayTeam.name}</span>
           </div>
         </div>
       </article>

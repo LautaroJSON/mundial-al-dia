@@ -36,21 +36,32 @@ body {
 
 /* ── Header ─────────────────────────────── */
 .site-header {
-  background: var(--verde-cancha);
   padding: 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
 }
 
 .header-inner {
+  background: var(--verde-cancha);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 0.75rem 1rem;
-  max-width: 680px;
   margin: 0 auto;
+}
+
+.intinerary-tab {
+  /* position: relative; */
+
+  background: var(--verde-cancha);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1rem 1rem;
+  border-radius: 0px 0px 12px 12px;
 }
 
 .site-title {
@@ -103,12 +114,14 @@ body {
 
 /* ── Nav tabs ───────────────────────────── */
 .tab-nav {
-  background: var(--verde-medio);
   display: flex;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
 
   overflow: hidden; /* Crucial: oculta el texto cuando se sale de los bordes */
   white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+
+  justify-content: end;
+  margin-right: 20%;
+  gap: 0.5rem;
 }
 
 .tab-nav a {
@@ -132,6 +145,16 @@ body {
 .tab-nav a:hover {
   color: var(--dorado-claro);
   border-bottom-color: var(--dorado);
+}
+
+.carrusel-container {
+  background: var(--verde-medio);
+  display: flex;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  overflow: hidden; /* Crucial: oculta el texto cuando se sale de los bordes */
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
 }
 
 .site-title-animation {
@@ -170,11 +193,83 @@ body {
   }
 }
 
+.next-argentina {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  background: linear-gradient(135deg, #001a09 0%, #0a3d1f 100%);
+  border: 1px solid var(--verde-claro);
+  border-radius: var(--radius-card);
+  padding: 1rem 1.25rem;
+  margin: 1rem;
+  color: var(--blanco);
+  font-size: 0.82rem;
+  position: relative;
+  overflow: hidden;
+
+  margin-bottom: 100px;
+}
+
+/* franja dorada decorativa arriba */
+.next-argentina::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--dorado),
+    var(--dorado-claro),
+    var(--dorado)
+  );
+}
+
+.next-argentina .label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dorado-claro);
+}
+
+.next-argentina strong {
+  /* font-family: var(--font-display); */
+  font-size: 1.2rem;
+  /* letter-spacing: 0.2rem; */
+  color: #fff;
+  /* line-height: 1.2; */
+}
+
+.next-argentina .fecha {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 0.1rem;
+}
+
 .sponsors {
   display: flex;
   justify-content: center;
   gap: 2rem;
   margin-top: 1rem;
+}
+
+.match-minute {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--rojo-vivo);
+  background: rgba(230, 48, 48, 0.08);
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid rgba(230, 48, 48, 0.2);
+}
+
+.match-minute.is-paused {
+  color: var(--dorado);
+  background: rgba(201, 168, 76, 0.1);
+  border-color: rgba(201, 168, 76, 0.3);
 }
 
 /* ── Main content ───────────────────────── */
@@ -315,6 +410,14 @@ body {
   text-align: center;
 }
 
+.team-name-original {
+  font-family: var(--font-body);
+  font-size: 0.5rem;
+  font-weight: 500;
+  color: var(--texto-claro);
+  text-align: center;
+}
+
 .team.home .team-name {
   text-align: left;
 }
@@ -441,5 +544,12 @@ body {
   }
   .team-name {
     font-size: 0.85rem;
+  }
+}
+
+@media (width < 1400px) {
+  .tab-nav {
+    justify-content: end;
+    margin-right: 5px;
   }
 }

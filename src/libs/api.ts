@@ -40,6 +40,7 @@ export interface Match {
   utcDate: string;
   status: MatchStatus;
   matchday: number | null;
+  lastUpdated: string;
   stage: string;
   group: string | null;
   homeTeam: Team;
@@ -115,7 +116,7 @@ export function formatTime(utcDate: string): string {
 
 export function stageLabel(stage: string, group: string | null): string {
   const labels: Record<string, string> = {
-    GROUP_STAGE: group ? `Grupo ${group}` : "Fase de Grupos",
+    GROUP_STAGE: group ? `Grupo ${group.split("_")[1]}` : "Fase de Grupos",
     LAST_16: "Octavos de Final",
     QUARTER_FINALS: "Cuartos de Final",
     SEMI_FINALS: "Semifinales",
@@ -134,4 +135,34 @@ export function groupByDate(matches: Match[]): Map<string, Match[]> {
     map.set(key, arr);
   }
   return map;
+}
+
+export function getMatchMinute(utcDate: string, lastUpdated: string): string {
+  const start = new Date(utcDate).getTime();
+  const now = new Date(lastUpdated).getTime();
+  const minutes = Math.floor((now - start) / 60_000);
+
+  if (minutes <= 45) return `${minutes}'`;
+  if (minutes <= 50) return `45+${minutes - 45}'`; // added time
+  const secondHalf = minutes - 15; // descontar el descanso
+  return `${Math.min(secondHalf, 90)}'`;
+}
+
+export async function getNextMatchForTeam(
+  env: Env,
+  teamId: number,
+): Promise<Match | null> {
+  const all = await getAllMatches(env);
+
+  const upcoming = all
+    .filter(
+      (m) =>
+        (m.homeTeam.id === teamId || m.awayTeam.id === teamId) &&
+        (m.status === "SCHEDULED" || m.status === "TIMED"),
+    )
+    .sort(
+      (a, b) => new Date(a.utcDate).getTime() - new Date(b.utcDate).getTime(),
+    );
+
+  return upcoming[0] ?? null;
 }

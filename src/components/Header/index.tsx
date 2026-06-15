@@ -15,8 +15,16 @@ export const Header = () => (
         EN VIVO
       </div>
     </div>
-    <nav class="tab-nav">
+    <div class="carrusel-container">
       <span class="site-title-animation">FIFA world cup</span>
+    </div>
+    <nav class="tab-nav">
+      <div class="intinerary-tab">
+        <a href="/">Inicio</a>
+      </div>
+      <div class="intinerary-tab">
+        <a href="/intinerario">Itinerario</a>
+      </div>
     </nav>
   </header>
 );
