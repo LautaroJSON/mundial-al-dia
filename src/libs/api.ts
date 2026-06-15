@@ -1,3 +1,5 @@
+import { cached } from "./cache";
+
 const BASE = "https://api.football-data.org/v4";
 
 // En Workers las env vars no son globales.
@@ -57,9 +59,6 @@ const TTL = {
   all: 5 * 60, // 5min — el itinerario es muy estable
 };
 
-// ─── fetch interno ───────────────────────────
-// Recibe el token como parámetro en lugar de leerlo de process.env
-
 async function fetchApi<T>(token: string, path: string): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { "X-Auth-Token": token },
@@ -69,65 +68,29 @@ async function fetchApi<T>(token: string, path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-// ─── Caché con KV ────────────────────────────
-// KVNamespace viene de c.env.CACHE, también viaja como parámetro
-
-async function cached<T>(
-  kv: KVNamespace,
-  key: string,
-  ttlSeconds: number,
-  fn: () => Promise<T>,
-): Promise<T> {
-  const hit = await kv.get(key);
-
-  if (hit !== null) {
-    console.log(`[cache] HIT  "${key}"`);
-    return JSON.parse(hit) as T;
-  }
-
-  console.log(`[cache] MISS "${key}" — llamando a la API...`);
-  const data = await fn();
-  await kv.put(key, JSON.stringify(data), { expirationTtl: ttlSeconds });
-  return data;
-}
-
-// ─── Funciones públicas ───────────────────────
-// Cada una recibe env completo para tener token + kv + competition
-
 export function getLiveMatches(env: Env): Promise<Match[]> {
-  const competition = env.COMPETITION_CODE ?? "WC";
-  const response = fetchApi<ApiResponse>(
-    env.API_TOKEN,
-    `/competitions/${competition}/matches?status=IN_PLAY,PAUSED`,
-  ).then((d) => d.matches ?? []);
-
-  console.log("response", response);
-  return response;
-  // return cached(env.CACHE, "live-matches", TTL.live, () =>
-  //   fetchApi<ApiResponse>(
-  //     env.API_TOKEN,
-  //     `/competitions/${competition}/matches?status=IN_PLAY,PAUSED`,
-  //   ).then((d) => d.matches ?? []),
-  // );
+  return cached("live-matches", TTL.live, () =>
+    fetchApi<ApiResponse>(
+      env.API_TOKEN,
+      `/competitions/WC/matches?status=IN_PLAY,PAUSED`,
+    ).then((d) => d.matches ?? []),
+  );
 }
 
 export function getScheduledMatches(env: Env): Promise<Match[]> {
-  const competition = env.COMPETITION_CODE ?? "WC";
-  return cached(env.CACHE, "scheduled-matches", TTL.scheduled, () =>
+  return cached("scheduled-matches", TTL.scheduled, () =>
     fetchApi<ApiResponse>(
       env.API_TOKEN,
-      `/competitions/${competition}/matches?status=SCHEDULED,TIMED`,
+      `/competitions/WC/matches?status=SCHEDULED,TIMED`,
     ).then((d) => d.matches ?? []),
   );
 }
 
 export function getAllMatches(env: Env): Promise<Match[]> {
-  const competition = env.COMPETITION_CODE ?? "WC";
-  return cached(env.CACHE, "all-matches", TTL.all, () =>
-    fetchApi<ApiResponse>(
-      env.API_TOKEN,
-      `/competitions/${competition}/matches`,
-    ).then((d) => d.matches ?? []),
+  return cached("all-matches", TTL.all, () =>
+    fetchApi<ApiResponse>(env.API_TOKEN, `/competitions/WC/matches`).then(
+      (d) => d.matches ?? [],
+    ),
   );
 }
 
